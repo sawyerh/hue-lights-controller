@@ -1,0 +1,12 @@
+{
+  "name": "hue-light-controller",
+  "version": "1.0.0",
+  "main": "flux.js",
+  "scripts": {
+    "start": "node flux.js"
+  },
+  "author": "Sawyer Hollenshead",
+  "dependencies": {
+    "axios": "^0.19.0"
+  }
+}
