@@ -1,12 +1,13 @@
 {
-  "name": "hue-light-controller",
-  "version": "1.0.0",
-  "main": "flux.js",
-  "scripts": {
-    "start": "node flux.js"
-  },
+  "name": "hue-light-flux",
   "author": "Sawyer Hollenshead",
-  "dependencies": {
-    "axios": "^0.19.0"
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/sawyerh/hue-lights-flux"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
   }
 }

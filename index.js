@@ -1,7 +1,6 @@
-const axios = require("axios");
+const http = require("http");
 
 const { HUE_IP, HUE_USER } = process.env;
-
 const scenes = {
   day: {
     // White and bright - Equivalent to "Concentrate"
@@ -21,7 +20,7 @@ async function runIt() {
   const mode = hour > 7 && hour < 20 ? "day" : "night";
 
   // Find the bathroom
-  const { data: groups } = await axios.get(apiUrl("groups"));
+  const groups = await request("get", "/groups");
   const bathroomGroup = Object.values(groups).find(
     group => group.name === "Bathroom"
   );
@@ -29,8 +28,9 @@ async function runIt() {
   // Update the lights
   const scene = Object.assign({}, scenes[mode]);
   const lightsWereOff = !bathroomGroup.action.on;
+
   bathroomGroup.lights.forEach(async light => {
-    const lightUrl = apiUrl(`lights/${light}/state`);
+    const lightPath = `/lights/${light}/state`;
 
     if (lightsWereOff) {
       // We can't modify things if the lights aren't on, unfortunately.
@@ -39,30 +39,57 @@ async function runIt() {
 
     // Set the scene
     console.log(`Setting light #${light} to ${mode}`, scene);
-    const { data: sceneResponse } = await axios.put(lightUrl, scene);
+    const sceneResponse = await request("PUT", lightPath, scene);
     console.log(sceneResponse);
 
     if (lightsWereOff) {
       // Turn the lights back off if they weren't before
       await wait(1);
-      await axios.put(lightUrl, { on: false });
+      await request("PUT", lightPath, { on: false });
     }
   });
 }
 
 /**
- * API URL helper
- * @param {String} path - Exclude beginning slash
+ * Make an HTTP request
+ * @param {"GET"|"POST"|"PUT"} method
+ * @param {String} path
+ * @param {Object} [body]
+ * @returns {Promise}
  */
-function apiUrl(path) {
-  return `http://${HUE_IP}/api/${HUE_USER}/${path}`;
+async function request(method, path, body) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://${HUE_IP}/api/${HUE_USER}${path}`, {
+      method
+    });
+
+    req.on("error", reject);
+    req.on("response", response => {
+      let data = "";
+
+      response.on("data", chunk => {
+        data += chunk;
+      });
+
+      response.on("end", () => {
+        resolve(JSON.parse(data));
+      });
+    });
+
+    if (body) {
+      req.write(JSON.stringify(body));
+    }
+
+    req.end();
+  });
 }
 
 /**
  * Pause for a number seconds
  * @param {Number} seconds
+ * @returns {Promise}
  */
-function wait(seconds) {
+async function wait(seconds) {
   return new Promise(resolve => {
     setTimeout(resolve, seconds * 1000);
   });
