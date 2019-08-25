@@ -1,10 +1,12 @@
+> A hacky Node module for simulating Flux for my Hue "Bathroom" light group
+
 # Getting started
 
 1. [Get the IP address of your Hue Bridge and generate a username](https://developers.meethue.com/develop/get-started-2/)
 1. Install dependencies: `npm install`
 1. Run the script, passing in the IP address and username from step 1:
   ```sh
-  HUE_IP={IP_GOES_HERE} HUE_USER={USERNAME_GOES_HERE} npm start
+  HUE_IP={IP_GOES_HERE} HUE_USER={USERNAME_GOES_HERE} npx hue-lights-flux
   ```
 
 ## Running the script daily
