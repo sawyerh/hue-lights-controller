@@ -7,6 +7,32 @@
   HUE_IP={IP_GOES_HERE} HUE_USER={USERNAME_GOES_HERE} npm start
   ```
 
+## Running the script daily
+
+To run the script automatically, I've setup a `crontab` job. My `$HOME` directory is structured similar to this:
+
+```
+~
+└── cron.txt
+    └── cron/
+        ├── hue-lights.sh
+        └── hue-lights-flux/
+            └── index.js
+```
+
+1. In `cron.txt`:
+    ```sh
+    5 7,20 * * * $HOME/cron/hue-lights.sh > /dev/null 2>&1
+    ```
+1. In `cron/hue-lights.sh`
+    ```sh
+    #!/usr/bin/env sh
+    PATH="/usr/local/bin:/usr/bin:/bin"
+
+    HUE_IP={IP_GOES_HERE} HUE_USER={USERNAME_GOES_HERE} node cron/hue-lights-flux
+    ```
+1. `chmod +x cron/hue-lights.sh`
+1. Then I create all Cron jobs by running: `crontab cron.txt`
 ----
 
 # Messy development notes
